@@ -1,21 +1,89 @@
-import type {
-  RunInput,
-  FunctionRunResult
-} from "../generated/api";
-import {
-  DiscountApplicationStrategy,
-} from "../generated/api";
+import type { RunInput, FunctionRunResult } from "../generated/api";
 
-const EMPTY_DISCOUNT: FunctionRunResult = {
-  discountApplicationStrategy: DiscountApplicationStrategy.First,
-  discounts: [],
+type Configuration = {
+  collection_ids: string[];
+  discount_percentage: number;
 };
-
-type Configuration = {};
 
 export function run(input: RunInput): FunctionRunResult {
-  const configuration: Configuration = JSON.parse(
-    input?.discountNode?.metafield?.value ?? "{}"
+  const config: Configuration = JSON.parse(
+    input.discountNode.metafield?.value ?? "{}"
   );
-  return EMPTY_DISCOUNT;
-};
+
+  if (!config.collection_ids?.length || !config.discount_percentage) {
+    return { discounts: [], discountApplicationStrategy: "FIRST" };
+  }
+
+  const { collection_ids, discount_percentage } = config;
+  const lines = input.cart.lines;
+
+  // Build map: collectionId → lines belonging to it
+  const collectionLines = new Map<string, typeof lines>();
+  for (const id of collection_ids) {
+    collectionLines.set(id, []);
+  }
+
+  for (const line of lines) {
+    const variant = line.merchandise;
+    if (variant.__typename !== "ProductVariant") continue;
+
+    // inCollections returns results for ALL 10 slots — filter to only configured IDs
+    for (const membership of variant.product.inCollections) {
+      if (
+        membership.isMember &&
+        collectionLines.has(membership.collectionId)
+      ) {
+        collectionLines.get(membership.collectionId)!.push(line);
+      }
+    }
+  }
+
+  // Sort each collection's lines ascending by unit price
+  for (const [id, colLines] of collectionLines) {
+    collectionLines.set(
+      id,
+      [...colLines].sort((a, b) =>
+        parseFloat(a.cost.amountPerQuantity.amount) -
+        parseFloat(b.cost.amountPerQuantity.amount)
+      )
+    );
+  }
+
+  // Bundle count = min qty across all required collections
+  const bundleCount = Math.min(
+    ...collection_ids.map((id) =>
+      (collectionLines.get(id) ?? []).reduce((sum, l) => sum + l.quantity, 0)
+    )
+  );
+
+  if (bundleCount === 0) {
+    return { discounts: [], discountApplicationStrategy: "FIRST" };
+  }
+
+  // Pick lowest-priced items up to bundleCount from each collection
+  const targets: { cartLineId: string; quantity: number }[] = [];
+  for (const id of collection_ids) {
+    let remaining = bundleCount;
+    for (const line of collectionLines.get(id)!) {
+      if (remaining <= 0) break;
+      const qty = Math.min(line.quantity, remaining);
+      targets.push({ cartLineId: line.id, quantity: qty });
+      remaining -= qty;
+    }
+  }
+
+  return {
+    discounts: [
+      {
+        targets: targets.map((t) => ({
+          cartLine: { id: t.cartLineId, quantity: t.quantity },
+        })),
+        value: {
+          percentage: { value: discount_percentage.toString() },
+        },
+        message: `Bundle ${discount_percentage}% off`,
+      },
+    ],
+    discountApplicationStrategy: "FIRST",
+  };
+}

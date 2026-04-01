@@ -1,6 +1,41 @@
 query RunInput {
+  cart {
+    lines {
+      id
+      quantity
+      cost {
+        amountPerQuantity {
+          amount
+          currencyCode
+        }
+      }
+      merchandise {
+        ... on ProductVariant {
+          id
+          product {
+            id
+            inCollections(ids: [
+              "gid://shopify/Collection/000000000001",
+              "gid://shopify/Collection/000000000002",
+              "gid://shopify/Collection/000000000003",
+              "gid://shopify/Collection/000000000004",
+              "gid://shopify/Collection/000000000005",
+              "gid://shopify/Collection/000000000006",
+              "gid://shopify/Collection/000000000007",
+              "gid://shopify/Collection/000000000008",
+              "gid://shopify/Collection/000000000009",
+              "gid://shopify/Collection/000000000010"
+            ]) {
+              collectionId
+              isMember
+            }
+          }
+        }
+      }
+    }
+  }
   discountNode {
-    metafield(namespace: "$app:bundle-discount", key: "function-configuration") {
+    metafield(namespace: "bundle-discount", key: "config") {
       value
     }
   }
