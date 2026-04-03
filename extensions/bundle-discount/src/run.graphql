@@ -15,16 +15,9 @@ query RunInput {
           product {
             id
             inCollections(ids: [
-              "gid://shopify/Collection/000000000001",
-              "gid://shopify/Collection/000000000002",
-              "gid://shopify/Collection/000000000003",
-              "gid://shopify/Collection/000000000004",
-              "gid://shopify/Collection/000000000005",
-              "gid://shopify/Collection/000000000006",
-              "gid://shopify/Collection/000000000007",
-              "gid://shopify/Collection/000000000008",
-              "gid://shopify/Collection/000000000009",
-              "gid://shopify/Collection/000000000010"
+              "gid://shopify/Collection/305373970506",
+              "gid://shopify/Collection/305374003274",
+              "gid://shopify/Collection/305374036042"
             ]) {
               collectionId
               isMember

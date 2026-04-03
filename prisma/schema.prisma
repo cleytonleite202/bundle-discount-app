@@ -32,3 +32,13 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model BundleConfig {
+  id                 Int      @id @default(autoincrement())
+  shop               String   @unique
+  discountNodeId     String?
+  collectionIds      String   @default("[]")
+  discountPercentage Float    @default(20)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

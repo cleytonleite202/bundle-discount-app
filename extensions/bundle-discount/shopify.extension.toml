@@ -1,11 +1,11 @@
-api_version = "2026-01"
+api_version = "2025-04"
 
 [[extensions]]
-name = "t:name"
+name = "bundle-discount"
 handle = "bundle-discount"
 type = "function"
 uid = "208e9edf-8b9b-6b74-3f3a-539fdede2328f859a084"
-description = "t:description"
+description = "Bundle discount based on collection membership"
 
   [[extensions.targeting]]
   target = "purchase.order-discount.run"
@@ -13,7 +13,7 @@ description = "t:description"
   export = "run"
 
   [extensions.build]
-  command = ""
+  command = ""  # ✅ actual build command
   path = "dist/function.wasm"
 
   [extensions.ui.paths]

@@ -24,21 +24,17 @@ export function run(input: RunInput): FunctionRunResult {
   }
 
   for (const line of lines) {
-    const variant = line.merchandise;
-    if (variant.__typename !== "ProductVariant") continue;
+    const variant = line.merchandise as any;
+    if (!variant?.product?.inCollections) continue;
 
-    // inCollections returns results for ALL 10 slots — filter to only configured IDs
     for (const membership of variant.product.inCollections) {
-      if (
-        membership.isMember &&
-        collectionLines.has(membership.collectionId)
-      ) {
+      if (membership.isMember && collectionLines.has(membership.collectionId)) {
         collectionLines.get(membership.collectionId)!.push(line);
       }
     }
   }
 
-  // Sort each collection's lines ascending by unit price
+  // Sort ascending by price (discount cheapest first)
   for (const [id, colLines] of collectionLines) {
     collectionLines.set(
       id,
@@ -60,24 +56,25 @@ export function run(input: RunInput): FunctionRunResult {
     return { discounts: [], discountApplicationStrategy: "FIRST" };
   }
 
-  // Pick lowest-priced items up to bundleCount from each collection
-  const targets: { cartLineId: string; quantity: number }[] = [];
+  // ✅ Use productVariant targets instead of cartLine
+  const targets: { productVariant: { id: string } }[] = [];
   for (const id of collection_ids) {
     let remaining = bundleCount;
     for (const line of collectionLines.get(id)!) {
       if (remaining <= 0) break;
-      const qty = Math.min(line.quantity, remaining);
-      targets.push({ cartLineId: line.id, quantity: qty });
-      remaining -= qty;
+      const variant = line.merchandise as any;
+      // Add the variant ID as target
+      targets.push({
+        productVariant: { id: variant.id },
+      });
+      remaining -= Math.min(line.quantity, remaining);
     }
   }
 
   return {
     discounts: [
       {
-        targets: targets.map((t) => ({
-          cartLine: { id: t.cartLineId, quantity: t.quantity },
-        })),
+        targets,
         value: {
           percentage: { value: discount_percentage.toString() },
         },

@@ -20,6 +20,7 @@ export default function App() {
           <s-link href="/app">Home</s-link>
           <s-link href="/app/additional">Additional page</s-link>
           <s-link href="/app/bundle-settings">Bundle Discount Settings</s-link>
+          <s-link href="/app/debug">Debug</s-link>
         </s-app-nav>
         <Outlet />
       </ShopifyAppProvider>
