@@ -3,7 +3,7 @@
 client_id = "0e915ab84426cd3946d9b90055aac443"
 name = "bundle-discount-app"
 #application_url = "https://example.com"
-application_url = "https://dark-taxes-fry.loca.lt"
+application_url = "https://jfybrand.com"
 embedded = true
 
 [build]
@@ -22,9 +22,9 @@ scopes = "write_discounts,read_discounts,read_products,write_metaobjects,write_m
 
 
 [auth]
-redirect_urls = [ "https://dark-taxes-fry.loca.lt/auth/callback",
-                  "https://dark-taxes-fry.loca.lt/auth/shopify/callback",
-                  "https://dark-taxes-fry.loca.lt/api/auth" ]
+redirect_urls = [ "https://jfybrand.com/auth/callback",
+                  "https://jfybrand.com/auth/shopify/callback",
+                  "https://jfybrand.com/api/auth" ]
 
 [[extensions]]
 type = "function"
