@@ -3,7 +3,7 @@
 client_id = "0e915ab84426cd3946d9b90055aac443"
 name = "bundle-discount-app"
 #application_url = "https://example.com"
-application_url = "https://jfybrand.com"
+application_url = "https://bundle-discount-production-0ede.up.railway.app"
 embedded = true
 
 [build]
@@ -22,9 +22,11 @@ scopes = "write_discounts,read_discounts,read_products,write_metaobjects,write_m
 
 
 [auth]
-redirect_urls = [ "https://jfybrand.com/auth/callback",
-                  "https://jfybrand.com/auth/shopify/callback",
-                  "https://jfybrand.com/api/auth" ]
+redirect_urls = [
+  "https://bundle-discount-production-0ede.up.railway.app/auth/callback",
+  "https://bundle-discount-production-0ede.up.railway.app/auth/shopify/callback",
+  "https://bundle-discount-production-0ede.up.railway.app/api/auth"
+]
 
 [[extensions]]
 type = "function"
