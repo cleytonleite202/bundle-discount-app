@@ -6,23 +6,18 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy package files
 COPY package.json package-lock.json* ./
 
-# ✅ Install ALL deps including devDeps for build
-RUN npm ci && npm cache clean --force
+# ✅ Install all deps with legacy peer deps flag
+RUN npm ci --legacy-peer-deps && npm cache clean --force
 
-# Copy source
 COPY . .
 
-# ✅ Generate Prisma client and build
 RUN npx prisma generate
 RUN npm run build
 
-# ✅ Remove devDeps after build to keep image small
-RUN npm prune --production
+RUN npm prune --production --legacy-peer-deps
 
-# ✅ Expose Railway's dynamic port
 EXPOSE ${PORT:-3000}
 
 CMD ["npm", "run", "docker-start"]
