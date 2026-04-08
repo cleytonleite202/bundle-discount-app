@@ -7,8 +7,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package.json package-lock.json* ./
-
-# ✅ Install ALL deps — don't prune, Shopify packages need their peer deps
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 
 COPY . .
@@ -16,8 +14,6 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-# ✅ Removed npm prune — it was deleting required Shopify peer deps
-
-EXPOSE ${PORT:-3000}
+EXPOSE 8080
 
 CMD ["npm", "run", "docker-start"]
