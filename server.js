@@ -1,14 +1,14 @@
+import * as build from "./build/server/index.js";
 import { createServer } from "node:http";
-import { createRequestHandler } from "@react-router/node";
 
 const port = process.env.PORT || 3000;
 
 console.log(`Starting server on port ${port}`);
 
-const handler = createRequestHandler({
-  build: () => import("./build/server/index.js"),
-  mode: process.env.NODE_ENV,
-});
+// Dynamically import react-router's handler
+const { createRequestHandler } = await import("react-router");
+
+const handler = createRequestHandler({ build, mode: process.env.NODE_ENV });
 
 const server = createServer(async (req, res) => {
   try {
@@ -21,5 +21,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`Server listening on http://0.0.0.0:${port}`);
+  console.log(`✅ Server listening on http://0.0.0.0:${port}`);
 });
