@@ -5,10 +5,11 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
 
 COPY package.json package-lock.json* ./
 
-# ✅ Install all deps with legacy peer deps flag
+# ✅ Install ALL deps — don't prune, Shopify packages need their peer deps
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 
 COPY . .
@@ -16,7 +17,7 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-RUN npm prune --production --legacy-peer-deps
+# ✅ Removed npm prune — it was deleting required Shopify peer deps
 
 EXPOSE ${PORT:-3000}
 
