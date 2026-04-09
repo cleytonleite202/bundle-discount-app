@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "0e915ab84426cd3946d9b90055aac443"
+client_id = "d4d9f8789d7197692cf792ee8279de87"
 name = "bundle-discount-app"
 #application_url = "https://example.com"
 application_url = "https://bundle-discount-production-0ede.up.railway.app"
